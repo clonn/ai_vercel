@@ -1,8 +1,5 @@
 {
   "buildCommand": "next build",
   "installCommand": "npm install",
-  "framework": "nextjs",
-  "eslint": {
-    "ignoreDuringBuilds": true
-  }
+  "framework": "nextjs"
 } 
