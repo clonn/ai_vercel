@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test:gemini": "NODE_OPTIONS='--loader ts-node/esm --no-warnings' node src/tests/gemini-api-test.ts"
+    "test:gemini": "ts-node -P tsconfig.test.json src/tests/gemini-api-test.ts",
+    "test:divination": "ts-node -P tsconfig.test.json src/tests/divination-api-test.ts"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.0",

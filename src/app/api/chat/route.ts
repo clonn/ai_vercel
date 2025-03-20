@@ -25,14 +25,13 @@ export async function POST(req: NextRequest) {
   try {
     const { information } = await req.json();
 
-    if (!Array.isArray(messages) || messages.length === 0) {
+    if (!information) {
       return NextResponse.json(
         { error: "Invalid messages format" },
         { status: 400 }
       );
     }
 
-    // Convert messages to Gemini format
     const history = [{
         role: "system",
         parts: [
@@ -55,17 +54,17 @@ export async function POST(req: NextRequest) {
       }
 
       return NextResponse.json({ response: text });
-    } catch (error: any) {
+    } catch (error) {
       console.error("Gemini API Error:", error);
       return NextResponse.json(
-        { error: error.message || "Failed to get response from API" },
+        { error: error instanceof Error ? error.message : "無法獲得API回應" },
         { status: 500 }
       );
     }
-  } catch (error: any) {
+  } catch (error) {
     console.error("Request processing error:", error);
     return NextResponse.json(
-      { error: error.message || "Failed to process request" },
+      { error: error instanceof Error ? error.message : "請求處理失敗" },
       { status: 400 }
     );
   }
