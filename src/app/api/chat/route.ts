@@ -10,18 +10,20 @@ if (!apiKey) {
 const genAI = new GoogleGenerativeAI(apiKey);
 
 const model = genAI.getGenerativeModel({
-  model: "gemini-1.5-pro-latest",
+  model: "gemini-2.0-flash-thinking-exp-01-21",
 });
 
 const generationConfig = {
-  temperature: 0.7,
-  topP: 0.9,
-  maxOutputTokens: 2048,
+  temperature: 0.9,
+  topP: 0.95,
+  topK: 64,
+  maxOutputTokens: 65536,
+  responseMimeType: "text/plain"
 };
 
 export async function POST(req: NextRequest) {
   try {
-    const { messages } = await req.json();
+    const { information } = await req.json();
 
     if (!Array.isArray(messages) || messages.length === 0) {
       return NextResponse.json(
@@ -31,10 +33,13 @@ export async function POST(req: NextRequest) {
     }
 
     // Convert messages to Gemini format
-    const history = messages.slice(0, -1).map(msg => ({
-      role: msg.role,
-      parts: [{ text: msg.content }]
-    }));
+    const history = [{
+        role: "system",
+        parts: [
+          {text: process.env.SYSTEM_PROMPT || "ai system prompt, you are a helpful assistant, please answer the user's question in Chinese in zh-TW"},
+        ],
+      }
+    ];
 
     const chatSession = model.startChat({
       generationConfig,
@@ -42,18 +47,18 @@ export async function POST(req: NextRequest) {
     });
 
     try {
-      const result = await chatSession.sendMessage(messages[messages.length - 1].content);
+      const result = await chatSession.sendMessage(information || "");
       const text = await result.response.text();
 
       if (!text || text.trim().length === 0) {
-        throw new Error("Empty response from Gemini API");
+        throw new Error("Empty response");
       }
 
       return NextResponse.json({ response: text });
     } catch (error: any) {
       console.error("Gemini API Error:", error);
       return NextResponse.json(
-        { error: error.message || "Failed to get response from Gemini API" },
+        { error: error.message || "Failed to get response from API" },
         { status: 500 }
       );
     }
