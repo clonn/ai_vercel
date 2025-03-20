@@ -1,10 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import * as dotenv from 'dotenv';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
 // Load environment variables from the project root
 dotenv.config({ path: new URL('../../.env.local', import.meta.url).pathname });
